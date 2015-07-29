@@ -153,8 +153,9 @@ distributor.pl - group files into bins of similar capacity
 
 Options:
 
-  --help   Show brief help and exit
-  --man    Show full documentation
+  -d|--debug  Show debugging info
+  --help      Show brief help and exit
+  --man       Show full documentation
 
 =head1 DESCRIPTION
 
