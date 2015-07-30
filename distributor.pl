@@ -47,12 +47,12 @@ sub process {
     open my $fh, '<', $file;
 
     my @files      = map { chomp; [ split /\s+/ ] } <$fh>;
-    my @weights    = sort { $a <=> $b } map { $_->[0] } @files;
+    my @weights    = map { $_->[0] } @files;
     my $num_files  = scalar @weights;
     my $sum        = sum(@weights);
     my $avg        = round($sum / $num_files);
     my $median     = median(@weights);
-    my $largest    = $weights[-1];
+    my $largest    = (sort { $a <=> $b } @weights)[-1];
     my $part_size  = max($median, $avg, $largest);
 
     $report->("num_files $num_files");
