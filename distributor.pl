@@ -11,6 +11,9 @@ use List::Util qw'sum max';
 use Math::Round 'round';
 use Number::Bytes::Human 'format_bytes';
 use Pod::Usage;
+use Readonly;
+
+Readonly my $MAX_WEIGHTS => 20;
 
 main();
 
@@ -68,9 +71,10 @@ sub process {
         $report->("PASS ", ++$pass);
 
         my $result = partition(
-            capacity => $part_size,
-            weights  => \@weights,
+            target => $part_size,
+            values => \@weights,
         );
+
         $report->("result = ", dump($result));
 
         if (@$result == 0) {
@@ -106,11 +110,21 @@ sub process {
 
 # --------------------------------------------------
 sub partition {
-    my %args = @_;
+    my %args   = @_;
+    my $target = $args{'target'} or return;
+    my @values = @{ $args{'values'} || [] } or return;
+
+    if (my @big = grep { $values[$_] >= $target } 0..$#values) {
+        return [shift @big];
+    }
+
+    if (scalar(@values) > $MAX_WEIGHTS) {
+        @values = splice(@values, 0, $MAX_WEIGHTS);
+    }
 
     my $knapsack = Algorithm::Knapsack->new(
-        capacity => $args{'capacity'},
-        weights  => $args{'weights'},
+        capacity => $target,
+        weights  => \@values,
     );
 
     $knapsack->compute();
